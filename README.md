@@ -1,139 +1,77 @@
-# SRFlow
-#### Official DehazeFlow code and trained models: Single Image Dehazing using Normalizing Flow in PyTorch <br><br>
-#### [[Paper] ECCV 2020 Spotlight](https://bit.ly/2DkwQcg)
+# DehazeFlow
+Code and trained models for reproducing results of: 
 
-<br>
+**DehazeFlow: Multi-scale Conditional Flow Network for Single Image Dehazing<br>Hongyu Li, Jia Li, Dong Zhao, Long Xu<br>ACM Conference on Multimedia (ACM MM), 2021.
+<br><br>**
+**[Paper will come soon]**
 
-[![SRFlow](https://user-images.githubusercontent.com/11280511/98149322-7ed5c580-1ecd-11eb-8279-f02de9f0df12.gif)](https://bit.ly/3jWFRcr)
-<br>
-<br>
-<br>
+## News
+The latest performance of our method after parameter adjustment is as follows:
 
-# Setup: Data, Environment, PyTorch Demo
+|        | PSNR   | SSIM   | LPIPS  |
+| :----: | :----: | :----: |:----:  |
+| indoor | 40.88  | 0.9897 | 0.0025 |
+| outdoor| 34.50  | 0.9859 | 0.0051 |
 
-<br>
+Link of trained models: https://drive.google.com/drive/folders/1NtQyK5dVu47E2LBk5ETcivPO96YFomPN?usp=sharing
 
-```bash
-git clone https://github.com/andreas128/SRFlow.git && cd SRFlow && ./setup.sh
+**Note: Opencv of this version is different from before. You need to run:**
+```
+conda uninstall opencv
+pip install opencv-python==4.5.3.56
 ```
 
-<br>
+## Environment
 
-This oneliner will:
-- Clone SRFlow
-- Setup a python3 virtual env
-- Install the packages from `requirements.txt`
-- Download the pretrained models
-- Download the validation data
-- Run the Demo Jupyter Notebook
+* python==3.8.0
+* lpips==0.1.3
+* pytorch==1.9.0
+* scikit-image==0.18.1
+* opencv==4.0.1
 
-If you want to install it manually, read the `setup.sh` file. (Links to data/models, pip packages)
+**Note: Different versions of opencv may cause different data reading results.**
 
-<br><br>
+## Datasets
+We use different parts of the [RESIDE](https://sites.google.com/view/reside-dehaze-datasets) dataset for training and validation.
+* ITS (indoor training set)<br>(Baidu Yun): https://pan.baidu.com/s/16rm4zUF8uVRs3Ux5T9CMMA<br>Passward:  tqyh
+* OTS (outdoor training set)<br>(Baidu Yun): https://pan.baidu.com/s/1c2rW4hi<br>Passward:  5vss
+* SOTS (testing set)<br>(Baidu Yun): https://pan.baidu.com/share/init?surl=SSVzR058DX5ar5WL5oBTLg<br>Passward:  s6tu
+* RTTS (real world testing samples)<br>(Baidu Yun): https://pan.baidu.com/s/1nuJOdjr<br>Passward:  n3v8
 
-# Demo: Try Normalizing Flow in PyTorch
+Use [/code/img2path.py](https://github.com/iCVTEAM/DehazeFlow/blob/main/code/img2path.py) to read the image paths and generate path files.
 
-```bash
-./run_jupyter.sh
+## Testing
+Download the trained models via https://drive.google.com/drive/folders/1Vb9BNYrDqKykfLpbX2lhNaus5YQw-s6V?usp=sharing.
+
+Modify [DehazeFlow.yml](https://github.com/iCVTEAM/DehazeFlow/blob/main/code/DehazeFlow.yml) to:
+1. set ```dataroot_GT``` and ```dataroot_HZ``` to paths containing testing images and ground-truths.
+2. set ```test_mode``` to 'indoor' or 'outdoor'.
+3. set ```model_path``` to pth file path.
+4. set ```heat``` (standard deviation) to an appropriate value.
+
+Run:
+```
+python test.py
 ```
 
-This notebook lets you:
-- Load the pretrained models.
-- Super-resolve images.
-- Measure PSNR/SSIM/LPIPS.
-- Infer the Normalizing Flow latent space.
+## Training
+Modify [DehazeFlow.yml](https://github.com/iCVTEAM/DehazeFlow/blob/main/code/DehazeFlow.yml) to:
+1. set ```path_root``` to path files for training and validation.
+2. set other parameters to appropriate values.
 
-<br><br>
-
-# Testing: Apply the included pretrained models
-
-```bash
-source myenv/bin/activate                      # Use the env you created using setup.sh
-cd code
-CUDA_VISIBLE_DEVICES=-1 python test.py ./confs/SRFlow_DF2K_4X.yml      # Diverse Images 4X (Dataset Included)
-CUDA_VISIBLE_DEVICES=-1 python test.py ./confs/SRFlow_DF2K_8X.yml      # Diverse Images 8X (Dataset Included)
-CUDA_VISIBLE_DEVICES=-1 python test.py ./confs/SRFlow_CelebA_8X.yml    # Faces 8X
+Then run:
 ```
-For testing, we apply SRFlow to the full images on CPU.
-
-<br><br>
-
-# Training: Reproduce or train on your Data
-
-The following commands train the Super-Resolution network using Normalizing Flow in PyTorch:
-
-```bash
-source myenv/bin/activate                      # Use the env you created using setup.sh
-cd code
-python train.py -opt ./confs/SRFlow_DF2K_4X.yml      # Diverse Images 4X (Dataset Included)
-python train.py -opt ./confs/SRFlow_DF2K_8X.yml      # Diverse Images 8X (Dataset Included)
-python train.py -opt ./confs/SRFlow_CelebA_8X.yml    # Faces 8X
+python -m torch.distributed.launch --nproc_per_node=2 train.py
 ```
 
-- To reduce the GPU memory, reduce the batch size in the yml file.
-- CelebA does not allow us to host the dataset. A script will follow.
 
-<br><br>
+## Comparison
 
-# Dataset: How to train on your own data
+![Comparison](https://github.com/iCVTEAM/iCVTEAM.github.io/blob/master/assets/DehazeFlow/comparison.png)
 
-The following command creates the pickel files that you can use in the yaml config file:
 
-```bash
-cd code
-python prepare_data.py /path/to/img_dir
-```
+## Citation
+To be updated.
 
-The precomputed DF2K dataset gets downloaded using `setup.sh`. You can reproduce it or prepare your own dataset.
-
-<br><br>
-
-# Our paper explains
-
-- **How to train Conditional Normalizing Flow** <br>
-  We designed an architecture that archives state-of-the-art super-resolution quality.
-- **How to train Normalizing Flow on a single GPU**  <br>
-  We based our network on GLOW, which uses up to 40 GPUs to train for image generation. SRFlow only needs a single GPU for training conditional image generation.
-- **How to use Normalizing Flow for image manipulation**  <br>
-  How to exploit the latent space for Normalizing Flow for controlled image manipulations
-- **See many Visual Results**  <br>
-  Compare GAN vs Normalizing Flow yourself. We've included a lot of visuals results in our [[Paper]](https://bit.ly/2D9cN0L).
-
-<br><br>
-
-# GAN vs Normalizing Flow - Blog
-
-[![](https://user-images.githubusercontent.com/11280511/98148862-56e66200-1ecd-11eb-817e-87e99dcab6ca.gif)](https://bit.ly/2EdJzhy)
-
-- **Sampling:** SRFlow outputs many different images for a single input.
-- **Stable Training:** SRFlow has much fewer hyperparameters than GAN approaches, and we did not encounter training stability issues.
-- **Convergence:** While GANs cannot converge, conditional Normalizing Flows converge monotonic and stable.
-- **Higher Consistency:** When downsampling the super-resolution, one obtains almost the exact input.
-
-Get a quick introduction to Normalizing Flow in our [[Blog]](https://bit.ly/320bAkH).
-<br><br><br>
-
-<br><br>
-
-# Wanna help to improve the code?
-
-If you found a bug or improved the code, please do the following:
-
-- Fork this repo.
-- Push the changes to your repo.
-- Create a pull request.
-
-<br><br>
-
-# Paper
-[[Paper] ECCV 2020 Spotlight](https://bit.ly/2XcmSks)
-
-```bibtex
-@inproceedings{lugmayr2020srflow,
-  title={SRFlow: Learning the Super-Resolution Space with Normalizing Flow},
-  author={Lugmayr, Andreas and Danelljan, Martin and Van Gool, Luc and Timofte, Radu},
-  booktitle={ECCV},
-  year={2020}
-}
-```
-<br><br>
+## Acknowledgment
+This repository is based on the implementation of [SRFlow: Learning the Super-Resolution Space with Normalizing Flow](https://github.com/andreas128/SRFlow).
