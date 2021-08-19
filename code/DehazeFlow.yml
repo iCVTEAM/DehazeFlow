@@ -18,7 +18,7 @@
 name: train
 use_tb_logger: true
 model: DehazeFlow
-distortion: sr
+word_size: 2 #Number of GPUs used for training
 scale: 4
 gpu_ids: [ 0 ]
 

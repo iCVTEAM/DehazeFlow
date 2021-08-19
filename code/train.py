@@ -57,7 +57,7 @@ def main():
     os.environ['MASTER_ADDR'] = 'localhost'
     os.environ['MASTER_PORT'] = '12355'
     os.environ['OMP_NUM_THREADS'] = '1'
-    torch.distributed.init_process_group(backend='gloo',rank=opt['rank'],world_size=1)
+    torch.distributed.init_process_group(backend='gloo',rank=opt['rank'],world_size=opt['word_size'])
 
     #### loading resume state if exists
     if opt['path'].get('resume_state', None):
@@ -137,17 +137,17 @@ def main():
             datalist = dataset_opt['path_root']
             train_set_list = [create_dataset(dataset_opt, datalist)]
 
-            train_size = int(math.ceil(dataset_opt['path_num'] / (dataset_opt['batch_size']*1)))
+            train_size = int(math.ceil(dataset_opt['path_num'] / (dataset_opt['batch_size']* opt['word_size'])))
 
             total_iters = int(opt['train']['niter'])
             total_epochs = int(math.ceil(total_iters / train_size))
 
             #use one dataset
-            train_sampler = DistributedSampler(train_set_list[0],num_replicas=1,rank=opt['rank'])
+            train_sampler = DistributedSampler(train_set_list[0],num_replicas=opt['word_size'],rank=opt['rank'])
             train_loader_list = [create_dataloader(train_set, dataset_opt, opt, train_sampler) for train_set in train_set_list]
             if opt['rank']== 0:
                 logger.info('Number of train images: {:,d}, iters: {:,d}'.format(
-                    train_size * dataset_opt['batch_size'] * 1, train_size))
+                    train_size * dataset_opt['batch_size'] * opt['word_size'], train_size))
                 logger.info('Total epochs needed: {:d} for iters {:,d}'.format(
                     total_epochs, total_iters))
         elif phase == 'val':

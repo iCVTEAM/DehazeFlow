@@ -31,15 +31,13 @@ def parse(opt_path, is_train=True,rank=None):
     os.environ['CUDA_VISIBLE_DEVICES'] = gpu_list
     print('export CUDA_VISIBLE_DEVICES=' + gpu_list)
     opt['is_train'] = is_train
-    if opt['distortion'] == 'sr':
-        scale = opt['scale']
+    scale = opt['scale']
 
     # datasets
     for phase, dataset in opt['datasets'].items():
         phase = phase.split('_')[0]
         dataset['phase'] = phase
-        if opt['distortion'] == 'sr':
-            dataset['scale'] = scale
+        dataset['scale'] = scale
         dataset['data_type'] = 'img'
         if dataset['mode'].endswith('mc'):  # for memcached
             dataset['data_type'] = 'mc'
@@ -70,8 +68,7 @@ def parse(opt_path, is_train=True,rank=None):
         opt['path']['log'] = opt['path']['results_root']
 
     # network
-    if opt['distortion'] == 'sr':
-        opt['network_G']['scale'] = scale
+    opt['network_G']['scale'] = scale
 
     # relative learning rate
     if 'train' in opt:
