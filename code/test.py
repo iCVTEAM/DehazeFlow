@@ -109,32 +109,28 @@ def main():
     opt['rank'] = 0
     model.to('cuda')
 
-    # #MSBDN_DFF test
-    # model = torch.load(opt['MSBDN_DFF_root'], map_location=lambda storage, loc: storage).to('cuda')
-
-    # lr_dir = 'C:/Users/14766/Desktop/subsots'
-    # hr_dir = 'C:/Users/14766/Desktop/subgt'
-
-    # lr_dir = r'D:\DataSet\SOTS\indoor\hazy'
-    # hr_dir = r'D:\DataSet\SOTS\indoor\gt'
     hr_dir = opt['dataroot_GT']
     lr_dir = opt['dataroot_HZ']
 
-    lr_paths = fiFindByWildcard(os.path.join(lr_dir, '*.png'))
+    if opt['test_mode'] == 'outdoor':
+        lr_paths = fiFindByWildcard(os.path.join(lr_dir, '*.jpg'))
+    else:
+        lr_paths = fiFindByWildcard(os.path.join(lr_dir, '*.png'))
     hr_paths = fiFindByWildcard(os.path.join(hr_dir, '*.png'))
 
-    temp_list = []
-    for i in range(len(hr_paths)):
-        for j in range(10):
-            temp_list.append(hr_paths[i])
-    hr_paths = temp_list
+    if opt['test_mode'] == 'indoor':
+        temp_list = []
+        for i in range(len(hr_paths)):
+            for j in range(10):
+                temp_list.append(hr_paths[i])
+        hr_paths = temp_list
 
 
     heat = opt['heat']
     tag = 4
     this_dir = os.path.dirname(os.path.realpath(__file__))
     # test_dir = os.path.join(this_dir, '..', 'results', conf,opt['model_path'].split('/')[-1].replace('.pth', ''),str(heat))
-    test_dir = os.path.join(this_dir, '..', 'results', 'test1')
+    test_dir = os.path.join(this_dir, '..', 'results', 'test1', str(heat))
     print(f"Out dir: {test_dir}")
 
     measure = Measure(use_gpu=False)
@@ -157,16 +153,15 @@ def main():
     AVG_PSNR = 0
     for lr_path, hr_path, idx_test in zip(lr_paths, hr_paths, range(len(lr_paths))):
 
-
-        lr = imCropCenter2(imread(lr_path),(456,616))
-        hr = imCropCenter2(imread(hr_path),(456,616))
-
-        # lr = imread(lr_path)
-        # hr = imread(hr_path)
+        if opt['test_mode'] == 'indoor':
+            lr = imCropCenter2(imread(lr_path),(456,616))
+            hr = imCropCenter2(imread(hr_path),(456,616))
+        else:
+            lr = imread(lr_path)
+            hr = imread(hr_path)
 
         # Pad image to be % 8
         h, w, c = lr.shape
-        lq_orig = lr.copy()
         lr = impad(lr, bottom=int(np.ceil(h / pad_factor) * pad_factor - h),
                    right=int(np.ceil(w / pad_factor) * pad_factor - w))
         hr = impad(hr, bottom=int(np.ceil(h / pad_factor) * pad_factor - h),
@@ -195,9 +190,6 @@ def main():
         print(str_out + ' AVG_PSNR: {:0.4f}'.format(AVG_PSNR/(idx_test+1)))
 
         df = pd.DataFrame([meas]) if df is None else pd.concat([pd.DataFrame([meas]), df])
-
-        # df.to_csv(path_out_measures + "_", index=False)
-        # os.rename(path_out_measures + "_", path_out_measures)
 
     df = pd.concat([pd.DataFrame(df.mean()), df],axis=0)
     df.to_csv(path_out_measures, index=False)

@@ -58,6 +58,7 @@ datasets:
 #### Test Settings
 dataroot_GT: D:\DataSet\SOTS\indoor\gt
 dataroot_HZ: D:\DataSet\SOTS\indoor\hazy
+test_mode: outdoor #indoor or outdoor
 model_path: D:\PycharmProjects\SRFlow-master\trained_models\its_best.pth
 heat: 0.1 # This is the standard deviation of the latent vectors
 
