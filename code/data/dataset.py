@@ -55,7 +55,6 @@ class PathDataset(data.Dataset):
         gpu = True
         augment = True
 
-        self.from_path_list = opt['from_paths_list']
         self.crop = opt['crop'] if "crop" in opt.keys() else True
 
         self.GT = open(self.path[0],'r').readlines()[:opt['path_num']]
@@ -71,56 +70,42 @@ class PathDataset(data.Dataset):
         return len(self.GT)
 
     def __getitem__(self, item):
-        if self.from_path_list:
-            GT = cv2.imread(self.GT[item].strip())
-            HZ = cv2.imread(self.HZ[item].strip())
+        GT = cv2.imread(self.GT[item].strip())
+        HZ = cv2.imread(self.HZ[item].strip())
 
-            GT_patch = None
-            HZ_patch = None
-            if self.crop:
-                # downscale = self.downsize[random.randint(0, 2)]
-                # GT = downsample(GT, downscale)
-                # HZ = downsample(HZ, downscale)
-                # GT_patch, HZ_patch = random_crop(GT, HZ, 152)
-                GT_patch, HZ_patch = self.crop_img(GT,HZ)
-            else:
-                #For OTS Validation
-                pad_factor = 8
-                h, w, c = HZ.shape
-                GT_patch = impad(GT, bottom=int(np.ceil(h / pad_factor) * pad_factor - h),
-                           right=int(np.ceil(w / pad_factor) * pad_factor - w))
-                HZ_patch = impad(HZ, bottom=int(np.ceil(h / pad_factor) * pad_factor - h),
-                           right=int(np.ceil(w / pad_factor) * pad_factor - w))
-
-            GT_patch = GT_patch.transpose([2, 0, 1]).astype(np.float32) / 255
-            HZ_patch = HZ_patch.transpose([2, 0, 1]).astype(np.float32) / 255
-
-            HZ_patch = np.clip(HZ_patch, 0, 1)  # we might get out of bounds due to noise
-            GT_patch = np.clip(GT_patch, 0, 1)  # we might get out of bounds due to noise
-            HZ_patch = np.asarray(HZ_patch, np.float32)
-            GT_patch = np.asarray(GT_patch, np.float32)
-
-            if self.crop:
-                flip_channel = random.randint(0, 1)
-                if flip_channel != 0:
-                    HZ_patch = np.flip(HZ_patch, 2)
-                    GT_patch = np.flip(GT_patch, 2)
-                # randomly rotation
-                rotation_degree = random.randint(0, 3)
-                HZ_patch = np.rot90(HZ_patch, rotation_degree, (1, 2))
-                GT_patch = np.rot90(GT_patch, rotation_degree, (1, 2))
-
-            lr = torch.Tensor(HZ_patch.copy())
-            hr = torch.Tensor(GT_patch.copy())
-
-            return {'LQ': lr, 'GT': hr, 'LQ_path': str(item), 'GT_path': str(item)}
+        GT_patch = None
+        HZ_patch = None
+        if self.crop:
+            GT_patch, HZ_patch = self.crop_img(GT,HZ)
         else:
-            HZ_patch = self.HZ[item]
-            GT_patch = self.GT[item]
+            #For Validation
+            pad_factor = 8
+            h, w, c = HZ.shape
+            GT_patch = impad(GT, bottom=int(np.ceil(h / pad_factor) * pad_factor - h),
+                       right=int(np.ceil(w / pad_factor) * pad_factor - w))
+            HZ_patch = impad(HZ, bottom=int(np.ceil(h / pad_factor) * pad_factor - h),
+                       right=int(np.ceil(w / pad_factor) * pad_factor - w))
 
+        GT_patch = GT_patch.transpose([2, 0, 1]).astype(np.float32) / 255
+        HZ_patch = HZ_patch.transpose([2, 0, 1]).astype(np.float32) / 255
 
-            lr = torch.Tensor(HZ_patch.copy())
-            hr = torch.Tensor(GT_patch.copy())
+        HZ_patch = np.clip(HZ_patch, 0, 1)  # we might get out of bounds due to noise
+        GT_patch = np.clip(GT_patch, 0, 1)  # we might get out of bounds due to noise
+        HZ_patch = np.asarray(HZ_patch, np.float32)
+        GT_patch = np.asarray(GT_patch, np.float32)
+
+        if self.crop:
+            flip_channel = random.randint(0, 1)
+            if flip_channel != 0:
+                HZ_patch = np.flip(HZ_patch, 2)
+                GT_patch = np.flip(GT_patch, 2)
+            # randomly rotation
+            rotation_degree = random.randint(0, 3)
+            HZ_patch = np.rot90(HZ_patch, rotation_degree, (1, 2))
+            GT_patch = np.rot90(GT_patch, rotation_degree, (1, 2))
+
+        lr = torch.Tensor(HZ_patch.copy())
+        hr = torch.Tensor(GT_patch.copy())
 
         return {'LQ': lr, 'GT': hr, 'LQ_path': str(item), 'GT_path': str(item)}
 
@@ -129,14 +114,14 @@ class PathDataset(data.Dataset):
             downscale = self.downsize[random.randint(0, 2)]
             GT = downsample(GT, downscale)
             HZ = downsample(HZ, downscale)
-            return  random_crop(GT, HZ, 152)
+            return  random_crop(GT, HZ, self.crop_size)
         elif math.floor(self.downsize[1] * GT.shape[0]) > self.crop_size and math.floor(self.downsize[1] * GT.shape[1]) > self.crop_size:
             downscale = self.downsize[random.randint(1, 2)]
             GT = downsample(GT, downscale)
             HZ = downsample(HZ, downscale)
-            return  random_crop(GT, HZ, 152)
+            return  random_crop(GT, HZ, self.crop_size)
         else:
-            return random_crop(GT, HZ, 152)
+            return random_crop(GT, HZ, self.crop_size)
 
 
 def downsample(img,scale):

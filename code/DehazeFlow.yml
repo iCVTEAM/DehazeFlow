@@ -25,10 +25,9 @@ gpu_ids: [ 0 ]
 #### datasets
 datasets:
   train:
-    name: RESIDE_128_tr
+    name: RESIDE_tr
     mode: PATH
-    dataroot_all: D:/DataSet/RESIDE_HDF5/train/
-    quant: 32
+    quant: 20
 
     use_shuffle: true
     n_workers: 1  # per GPU
@@ -36,20 +35,16 @@ datasets:
     GT_size: 152
 
     crop: true
-    from_paths_list: true
     path_root:
       - D:\PycharmProjects\SRFlow-master\datasets\ots_clear_train.txt
       - D:\PycharmProjects\SRFlow-master\datasets\ots_hazy_train.txt
     path_num: 313950
 
   val:
-    name: RESIDE_128_va
+    name: RESIDE_va
     mode: PATH
-    dataroot_all: D:/DataSet/RESIDE_HDF5/val/
-    quant: 32
 
     crop: false
-    from_paths_list: true
     path_root:
       - D:\PycharmProjects\SRFlow-master\datasets\ots_clear_val.txt
       - D:\PycharmProjects\SRFlow-master\datasets\ots_hazy_val.txt
