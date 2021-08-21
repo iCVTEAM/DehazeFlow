@@ -25,7 +25,7 @@ pip install opencv-python==4.5.3.56
 
 * python==3.8.0
 * lpips==0.1.3
-* pytorch==1.9.0
+* pytorch==1.8.0
 * scikit-image==0.18.1
 * opencv==4.0.1
 
