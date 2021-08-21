@@ -59,7 +59,7 @@ Modify [DehazeFlow.yml](https://github.com/iCVTEAM/DehazeFlow/blob/main/code/Deh
 1. set ```path_root``` to path files for training and validation.
 2. set other parameters to appropriate values.
 
-Then run:
+Run:
 ```
 python -m torch.distributed.launch --nproc_per_node=2 train.py
 ```
