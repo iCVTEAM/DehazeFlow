@@ -33,10 +33,10 @@ pip install opencv-python==4.5.3.56
 
 ## Datasets
 We use different parts of the [RESIDE](https://sites.google.com/view/reside-dehaze-datasets) dataset for training and validation.
-* ITS (indoor training set)<br>(Baidu Yun): https://pan.baidu.com/s/16rm4zUF8uVRs3Ux5T9CMMA<br>Passward:  tqyh
-* OTS (outdoor training set)<br>(Baidu Yun): https://pan.baidu.com/s/1c2rW4hi<br>Passward:  5vss
-* SOTS (testing set)<br>(Baidu Yun): https://pan.baidu.com/share/init?surl=SSVzR058DX5ar5WL5oBTLg<br>Passward:  s6tu
-* RTTS (real world testing samples)<br>(Baidu Yun): https://pan.baidu.com/s/1nuJOdjr<br>Passward:  n3v8
+* ITS (indoor training set)
+* OTS (outdoor training set)
+* SOTS (testing set
+* RTTS (real world testing samples)
 
 Use [/code/img2path.py](https://github.com/iCVTEAM/DehazeFlow/blob/main/code/img2path.py) to read the image paths and generate path files.
 
