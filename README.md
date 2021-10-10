@@ -35,7 +35,7 @@ pip install opencv-python==4.5.3.56
 We use different parts of the [RESIDE](https://sites.google.com/view/reside-dehaze-datasets) dataset for training and validation.
 * ITS (indoor training set)
 * OTS (outdoor training set)
-* SOTS (testing set
+* SOTS (testing set)
 * RTTS (real world testing samples)
 
 Use [/code/img2path.py](https://github.com/iCVTEAM/DehazeFlow/blob/main/code/img2path.py) to read the image paths and generate path files.
