@@ -3,7 +3,7 @@ Code and trained models for reproducing results of:
 
 **DehazeFlow: Multi-scale Conditional Flow Network for Single Image Dehazing<br>Hongyu Li, Jia Li, Dong Zhao, Long Xu<br>ACM Conference on Multimedia (ACM MM), 2021.
 <br><br>**
-**[Paper]https://dl.acm.org/doi/abs/10.1145/3474085.3475432**
+**[Paper](https://dl.acm.org/doi/abs/10.1145/3474085.3475432)**
 
 ## News
 The latest performance of our method after parameter adjustment is as follows:
