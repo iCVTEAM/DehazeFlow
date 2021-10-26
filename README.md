@@ -71,6 +71,7 @@ python -m torch.distributed.launch --nproc_per_node=2 train.py
 
 
 ## Citation
+```
 @inproceedings{10.1145/3474085.3475432,
 author = {Li, Hongyu and Li, Jia and Zhao, Dong and Xu, Long},
 title = {DehazeFlow: Multi-Scale Conditional Flow Network for Single Image Dehazing},
@@ -86,6 +87,7 @@ keywords = {normalizing flow, single image dehazing, attention},
 location = {Virtual Event, China},
 series = {MM '21}
 }
+```
 
 ## Acknowledgment
 This repository is based on the implementation of [SRFlow: Learning the Super-Resolution Space with Normalizing Flow](https://github.com/andreas128/SRFlow).
